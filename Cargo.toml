@@ -1,7 +1,11 @@
 [package]
 name = "oxydian"
+description = "Rust Interface for Obsidian"
 version = "0.1.0"
 edition = "2021"
+license-file = "LICENSE"
+repository = "https://github.com/cxrvus/oxydian"
+
 
 [dependencies.clap]
 version = "4.5.4"
