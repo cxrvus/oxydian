@@ -1,25 +1,22 @@
-use clap::{arg, command, ArgAction};
+use clap::{Parser, ValueEnum};
+
+
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+struct Cli {
+	#[arg(value_enum)]
+	command: Command,
+	id: String,
+	origin: Option<String>,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+enum Command {
+	Flow,
+	Query,
+}
 
 fn main() {
-	let matches = command!()
-		.version("1.0")
-		.author("Benito Rabe")
-		.about("Rust Interface for Obsidian")
-		.arg(
-			arg!("command")
-				.action(ArgAction::Set)
-				.required(true)
-				.value_parser(clap::builder::PossibleValuesParser::new(["query"]))
-		)
-		.arg(
-			arg!("id")
-				.action(ArgAction::Set)
-				.required(true)
-		)
-		.arg(
-			arg!("note")
-				.action(ArgAction::Set)
-				.required(false)
-		)
-		.get_matches();
+	let args = Cli::parse();
+	println!("Command: {:?}\nID: {}\nOrigin: {}", args.command, args.id, args.origin.unwrap_or("None".to_string()));
 }
