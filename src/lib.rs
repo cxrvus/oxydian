@@ -11,7 +11,7 @@ struct Cli {
 }
 
 
-fn main() {
+pub fn execute() {
 	let args = Cli::parse();
 	println!("{:?}", args);
 }
