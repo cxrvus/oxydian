@@ -7,6 +7,7 @@ license-file = "LICENSE"
 repository = "https://github.com/cxrvus/oxydian"
 
 
-[dependencies.clap]
-version = "4.5.4"
-features = ["cargo", "derive"]
+[dependencies]
+clap = { version = "4.5.4", features = ["cargo", "derive"] }
+serde = { version = "1.0.200" }
+serde_json = { version = "1.0.116" }
