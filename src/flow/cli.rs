@@ -1,3 +1,4 @@
+use anyhow::{Context, Result};
 use clap::Parser;
 
 
@@ -5,11 +6,12 @@ use clap::Parser;
 #[command(version, about, long_about = None)]
 pub struct Cli {
 	#[arg(long, short)]
-	dry_run: bool,
-	flow: String,
-	origin: Option<String>,
+	pub dry_run: bool,
+	#[arg(required = true)]
+	pub flow: String,
+	pub origin: Option<String>,
 }
 
-pub fn parse() -> Cli {
-	Cli::parse()
+pub fn parse() -> Result<Cli> {
+	Cli::try_parse().context("Failed to parse CLI arguments")
 }
