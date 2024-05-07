@@ -7,7 +7,7 @@ pub struct FileProps {
 	pub extension: String,
 }
 
-const ALLOWED_EXTENSIONS: [&str; 11] = ["md", "pdf", "jpg", "jpeg", "png", "webp", "svg", "mp4", "mp3", "ogg", "wav"];
+const ALLOWED_EXTENSIONS: [&str; 13] = ["md", "json", "pdf", "jpg", "jpeg", "png", "webp", "svg", "gif", "mp4", "mp3", "ogg", "wav"];
 
 pub fn read_files(folder: &str) -> Result<Vec<FileProps>> {
 	let dir = fs::read_dir(folder)?;
