@@ -1,14 +1,29 @@
-use std::{collections::HashMap};
+use std::{collections::HashMap, fs::read};
 use anyhow::{anyhow, Result};
 use serde::{Serialize, Deserialize};
 mod cli;
 mod fs_util;
 
-pub struct App<Props: Serialize> {
-	flows: HashMap<String, Flow<Props>>
+#[derive(Deserialize)]
+#[serde(rename_all(deserialize = "snake_case"))]
+struct AppConfig {
+	vault_dir: String,
 }
 
-impl<Props: Serialize> App<Props> {
+pub struct App {
+	config: AppConfig,
+	flows: HashMap<String, Flow>
+}
+
+impl App {
+	pub fn new() -> Result<Self> {
+		let config_file = read("./oxyconfig.json").expect("Please create a oxyconfig.json file in the root directory of your project.");
+		let config = serde_json::from_slice::<AppConfig>(&config_file)?;
+		let flows = HashMap::new();
+		println!("{}", config.vault_dir);
+		return Ok(App { config, flows });
+	}
+
 	pub fn execute(&self) {
 		let actions = self.get_actions();
 		match actions {
@@ -28,19 +43,19 @@ impl<Props: Serialize> App<Props> {
 		todo!("invoke actions")
 	}
 
-	pub fn register_flow(mut self, name: &str, flow: Flow<Props>) -> Self {
+	pub fn register_flow(mut self, name: &str, flow: Flow) -> Self {
 		self.flows.insert(name.to_string(), flow).expect("Flow already exists");
 		return self;
 	}
 }
 
-pub struct Flow<Props> {
+pub struct Flow {
 	pub name: String,
 	pub folder: String,
-	function: fn(Vec<Props>) -> Result<Vec<FileAction>>,
+	// function: fn(Vec<Props>) -> Result<Vec<FileAction>>,
 }
 
-impl<Props> Flow<Props> {
+impl Flow {
 	pub fn invoke(&self) -> Result<Vec<FileAction>> {
 		let props = fs_util::read_files(&self.folder)?;
 		todo!("invoke flow using correct props type")
