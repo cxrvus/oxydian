@@ -1,20 +1,9 @@
-use crate::prelude::*;
-use crate::fs_util;
+use crate::{file::Note, prelude::*};
 
-pub struct Flow {
-	pub name: String,
-	pub folder: String,
-	// function: fn(Vec<Props>) -> Result<Vec<FileAction>>,
-}
+pub struct Flow (fn(&Vault, origin: Option<Note>) -> Result<()>);
 
 impl Flow {
-	pub fn invoke(&self) -> Result<Vec<FileAction>> {
-		let props = fs_util::read_files(&self.folder)?;
-		todo!("invoke flow using correct props type")
-		// return (self.function)(props)
+	pub fn execute(&self, vault: &Vault, origin: Option<Note>) -> Result<()> {
+		(self.0)(vault, origin)
 	}
-}
-
-pub enum FileAction {
-	// todo
 }
