@@ -49,7 +49,7 @@ impl VaultFile {
 
 pub struct Note
 {
-	full_content: String,
+	content: String,
 }
 
 struct NoteSections {
@@ -57,9 +57,22 @@ struct NoteSections {
 	props: Option<String>,
 }
 
+impl NoteSections {
+	fn merge(self) -> Note {
+		Note { content:
+			if let Some(props) = self.props {
+				format!("---\n{}\n---\n{}", props, self.content)
+			}
+			else {
+				self.content
+			}
+		}
+	}
+}
+
 impl Note {
-	fn get_sections(&self) -> NoteSections {
-		let full_content = self.full_content.clone();
+	fn split(&self) -> NoteSections {
+		let full_content = self.content.clone();
 		let mut sections = full_content.split("---\n");
 
 		let first = sections.next().expect("impossible: split always returns at least one element");
@@ -76,10 +89,20 @@ impl Note {
 		}
 	}
 
-	pub fn new(full_content: String) -> Self { Self { full_content } }
+	pub fn new(full_content: String) -> Self { Self { content: full_content } }
 
-	pub fn full_content(&self) -> &str { &self.full_content }
-	pub fn get_content(&self) -> String { self.get_sections().content }
+	pub fn full_content(&self) -> &str { &self.content }
 
-	pub fn get_props(&self) -> Option<String> { self.get_sections().props; todo!("parse YAML props and turn into JSON") }
+	pub fn get_content(&self) -> String { self.split().content }
+
+	pub fn set_content(&mut self, new_content: String) {
+		let new_content = new_content.trim().to_string() + "\n";
+		let mut sections = self.split();
+		sections.content = new_content;
+		self.content = sections.merge().content;
+	}
+
+	pub fn get_props(&self) -> Option<String> { self.split().props; todo!("parse YAML props and turn into JSON") }
+
+	pub fn change_props() { todo!() }
 }
