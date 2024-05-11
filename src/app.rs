@@ -7,7 +7,7 @@ const CONFIG_PATH: &str = "./oxydian/config.json";
 #[derive(Clone, Deserialize)]
 #[serde(rename_all(deserialize = "snake_case"))]
 pub struct AppConfig {
-	pub vault_dir: String,
+	pub vault_path: String,
 }
 
 pub struct App {
@@ -36,8 +36,8 @@ impl App {
 		let args = cli::parse()?;
 		let config = self.config.clone();
 		let origin = args.origin;
-		let vault_dir = PathBuf::from(&config.vault_dir);
-		let vault = Vault { vault_path: vault_dir, origin };
+		let vault_path = PathBuf::from(&config.vault_path);
+		let vault = Vault { vault_path: vault_path, origin };
 		let flow = self.flows.get(&args.flow).ok_or(anyhow!("Flow not found"))?;
 		flow.execute(&vault, None) // todo: turn origin into a Note
 	}

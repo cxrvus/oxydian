@@ -8,8 +8,8 @@ pub struct VaultFile {
 }
 
 impl VaultFile {
-	pub fn new(vault_dir: &PathBuf, sub_path: &str) -> Result<Self> {
-		let path = vault_dir.join(PathBuf::from(sub_path));
+	pub fn new(vault_path: &PathBuf, sub_path: &str) -> Result<Self> {
+		let path = vault_path.join(PathBuf::from(sub_path));
 		if !path.exists() { return Err(anyhow!("File does not exist")); }
 		if !path.is_file() { return Err(anyhow!("Path is not a file")); }
 
