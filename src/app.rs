@@ -54,8 +54,14 @@ impl App {
 	fn run_flow(&self, args: FlowArgs) -> Result<()> {
 		let config = self.config.clone();
 		let origin = args.origin;
-		let ctx = Context { config, origin };
+		let ctx = AppContext { config, origin };
 		let flow = self.flows.get(&args.flow).ok_or(anyhow!("Flow not found"))?;
-		flow.execute(&ctx, None) // todo: turn origin into a Note
+		flow.execute(&ctx) // todo: turn origin into a Note
 	}
+}
+
+
+pub struct AppContext {
+	pub config: AppConfig,
+	pub origin: Option<String>
 }

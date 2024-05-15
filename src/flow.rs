@@ -1,9 +1,9 @@
-use crate::{item::Note, prelude::*};
+use crate::{app::AppContext, prelude::*};
 
-pub struct Flow (fn(&Context, origin: Option<Note>) -> Result<()>);
+pub struct Flow (fn(&AppContext) -> Result<()>);
 
 impl Flow {
-	pub fn execute(&self, ctx: &Context, origin: Option<Note>) -> Result<()> {
-		(self.0)(ctx, origin)
+	pub fn execute(&self, ctx: &AppContext) -> Result<()> {
+		(self.0)(ctx)
 	}
 }
