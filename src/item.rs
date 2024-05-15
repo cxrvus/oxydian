@@ -2,18 +2,18 @@ use std::{fs, path::{Path, PathBuf}};
 use anyhow::{anyhow, Result};
 // use serde::{Deserialize, Serialize};
 
-pub struct VaultFile {
+pub struct Item {
 	path: PathBuf,
 	sub_path: String,
 }
 
-impl VaultFile {
+impl Item {
 	pub fn new(vault_path: &PathBuf, sub_path: &str) -> Result<Self> {
 		let path = vault_path.join(PathBuf::from(sub_path));
 		if !path.exists() { return Err(anyhow!("File does not exist")); }
 		if !path.is_file() { return Err(anyhow!("Path is not a file")); }
 
-		Ok(VaultFile { path: PathBuf::from(path), sub_path: sub_path.into() })
+		Ok(Item { path: PathBuf::from(path), sub_path: sub_path.into() })
 	}
 
 	pub fn path(&self) -> &Path { self.path.as_path() }
@@ -31,12 +31,12 @@ impl VaultFile {
 		else { None }
 	}
 
-	pub fn rm(self, file: VaultFile) -> Result<()> {
+	pub fn rm(self, file: Item) -> Result<()> {
 		fs::remove_file(file.path())?;
 		Ok(())
 	}
 
-	pub fn mv(&mut self, file: VaultFile, target_dir: &PathBuf) -> Result<()> {
+	pub fn mv(&mut self, file: Item, target_dir: &PathBuf) -> Result<()> {
 		if !target_dir.is_dir() { return Err(anyhow!("Target needs to be a directory")); }
 
 		let new_path = target_dir.join(file.name());

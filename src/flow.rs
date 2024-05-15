@@ -1,4 +1,4 @@
-use crate::{file::Note, prelude::*};
+use crate::{item::Note, prelude::*};
 
 pub struct Flow (fn(&Context, origin: Option<Note>) -> Result<()>);
 
