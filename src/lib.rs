@@ -3,7 +3,6 @@ pub mod cli;
 pub mod context;
 pub mod item;
 pub mod flow;
-pub mod fs_util;
 pub mod time;
 
 pub mod prelude {

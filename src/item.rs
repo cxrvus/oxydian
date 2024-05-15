@@ -31,19 +31,41 @@ impl Item {
 		else { None }
 	}
 
-	pub fn rm(self, file: Item) -> Result<()> {
-		fs::remove_file(file.path())?;
+	pub fn rm(self) -> Result<()> {
+		fs::remove_file(self.path())?;
 		Ok(())
 	}
 
-	pub fn mv(&mut self, file: Item, target_dir: &PathBuf) -> Result<()> {
+	pub fn mv(&mut self, target_dir: &PathBuf) -> Result<()> {
 		if !target_dir.is_dir() { return Err(anyhow!("Target needs to be a directory")); }
 
-		let new_path = target_dir.join(file.name());
-		fs::rename(file.path(), &new_path)?;
+		let new_path = target_dir.join(self.name());
+		fs::rename(self.path(), &new_path)?;
 
 		self.path = new_path;
 		Ok(())
+	}
+
+	pub const ALLOWED_EXTENSIONS: [&'static str; 13] = ["md", "json", "pdf", "jpg", "jpeg", "png", "webp", "svg", "gif", "mp4", "mp3", "ogg", "wav"];
+
+	pub fn ls(folder: &str) -> Result<Vec<Self>> {
+		let dir = fs::read_dir(folder)?;
+		let files = dir
+			.filter_map(|dir_entry| {
+				let dir_entry = dir_entry.ok()?;
+				if !&dir_entry.file_type().ok()?.is_file() { return None; }
+				let path = dir_entry.path();
+
+				let id = path.file_stem()?.to_str()?.to_string();
+				let extension = path.extension()?.to_str()?.to_string();
+
+				if !Self::ALLOWED_EXTENSIONS.contains(&extension.as_str()) { return None; }
+
+				Some(Self { path, sub_path: id })
+			})
+			.collect();
+
+		Ok(files)
 	}
 }
 
