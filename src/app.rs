@@ -1,6 +1,5 @@
 use std::fs::read;
-use crate::prelude::*;
-use super::cli;
+use crate::{cli::{parse_args, Command, FlowArgs}, prelude::*};
 
 
 const CONFIG_PATH: &str = "./oxydian/config.json";
@@ -46,7 +45,13 @@ impl App {
 	}
 
 	pub fn execute (&self) -> Result<()> {
-		let args = cli::parse()?;
+		let command = parse_args()?.command;
+		match command {
+			Command::Flow(args) => self.run_flow(args),
+		}
+	}
+
+	fn run_flow(&self, args: FlowArgs) -> Result<()> {
 		let config = self.config.clone();
 		let origin = args.origin;
 		let ctx = Context { config, origin };
