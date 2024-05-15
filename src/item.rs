@@ -18,10 +18,10 @@ impl Item {
 
 	pub fn path(&self) -> &Path { self.path.as_path() }
 	pub fn sub_path(&self) -> &String { &self.sub_path }
-	pub fn name(&self) -> &str { self.path.file_name().unwrap().to_str().unwrap() }
-	pub fn stem(&self) -> &str { self.path.file_stem().unwrap().to_str().unwrap() }
-	pub fn ext(&self) -> &str { self.path.extension().unwrap().to_str().unwrap() }
 	pub fn dir(&self) -> &Path { self.path.parent().unwrap() }
+	pub fn name(&self) -> &str { self.path.file_name().unwrap_or_default().to_str().unwrap() }
+	pub fn stem(&self) -> &str { self.path.file_stem().unwrap_or_default().to_str().unwrap() }
+	pub fn ext(&self)  -> &str { self.path.extension().unwrap_or_default().to_str().unwrap() }
 
 	pub fn note(&self) -> Option<Note> {
 		if self.ext() == "md" {
