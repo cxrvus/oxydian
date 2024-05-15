@@ -2,12 +2,24 @@ use std::fs::read;
 use crate::prelude::*;
 use super::cli;
 
+
 const CONFIG_PATH: &str = "./oxydian/config.json";
 
-#[derive(Clone, Deserialize)]
+#[derive(Deserialize)]
 #[serde(rename_all(deserialize = "snake_case"))]
-pub struct AppConfig {
+pub struct AppConfigRaw {
 	pub vault_path: String,
+}
+
+#[derive(Clone)]
+pub struct AppConfig {
+	pub vault_path: PathBuf,
+}
+
+impl From<AppConfigRaw> for AppConfig {
+	fn from(raw: AppConfigRaw) -> Self {
+		AppConfig { vault_path: PathBuf::from(raw.vault_path) }
+	}
 }
 
 pub struct App {
@@ -23,7 +35,8 @@ impl App {
 
 	pub fn with_flows(flows: HashMap<String, Flow>) -> Result<Self> {
 		let config_file = read(CONFIG_PATH).expect("Please create a oxyconfig.json file in the root directory of your project.");
-		let config = serde_json::from_slice::<AppConfig>(&config_file)?;
+		let config = serde_json::from_slice::<AppConfigRaw>(&config_file)?;
+		let config = AppConfig::from(config);
 		Ok(App { config, flows })
 	}
 
@@ -36,9 +49,8 @@ impl App {
 		let args = cli::parse()?;
 		let config = self.config.clone();
 		let origin = args.origin;
-		let vault_path = PathBuf::from(&config.vault_path);
-		let vault = Vault { vault_path: vault_path, origin };
+		let ctx = Context { config, origin };
 		let flow = self.flows.get(&args.flow).ok_or(anyhow!("Flow not found"))?;
-		flow.execute(&vault, None) // todo: turn origin into a Note
+		flow.execute(&ctx, None) // todo: turn origin into a Note
 	}
 }

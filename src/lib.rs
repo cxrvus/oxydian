@@ -1,6 +1,6 @@
 pub mod app;
 pub mod cli;
-pub mod vault;
+pub mod context;
 pub mod file;
 pub mod flow;
 pub mod fs_util;
@@ -14,7 +14,7 @@ pub mod prelude {
 	pub use std::collections::HashMap;
 
 	pub use crate::app::App;
-	pub use crate::vault::Vault;
+	pub use crate::context::Context;
 	pub use crate::file::VaultFile;
 	pub use crate::flow::Flow;
 }
