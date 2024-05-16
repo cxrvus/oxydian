@@ -1,7 +1,7 @@
+use crate::note::Note;
 use std::{fs::{self, read_dir}, path::{Path, PathBuf}};
 use anyhow::{anyhow, Result};
 
-use crate::note::Note;
 
 const ALLOWED_EXTENSIONS: [&'static str; 13] = ["md", "json", "pdf", "jpg", "jpeg", "png", "webp", "svg", "gif", "mp4", "mp3", "ogg", "wav"];
 

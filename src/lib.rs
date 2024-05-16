@@ -6,7 +6,6 @@ pub mod util;
 pub mod vault;
 pub mod vault_config;
 
-
 pub mod prelude {
 	pub use super::util::*;
 	pub use super::vault::Vault;

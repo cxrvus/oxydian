@@ -1,5 +1,6 @@
 use crate::{note::Note, util::*, vault_config::VaultConfig};
 
+
 pub enum IFlow {
 	Flow (fn(&VaultConfig, &Note) -> Result<()>),
 	FreeFlow (fn(&VaultConfig) -> Result<()>),

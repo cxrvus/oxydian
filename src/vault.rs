@@ -35,7 +35,6 @@ pub struct Vault {
 	flows: HashMap<String, IFlow>
 }
 
-
 impl Vault {
 	pub fn new(vault_setup: VaultSetup) -> Result<Self> {
 		Ok(Self {
