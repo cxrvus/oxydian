@@ -2,7 +2,7 @@ use crate::util::*;
 
 
 pub struct VaultSetup {
-	root_path: String,
+	pub root_path: String,
 }
 
 pub struct VaultConfig {
