@@ -28,7 +28,7 @@ impl Note {
 
 		let first = sections.next().expect("impossible: split always returns at least one element");
 		let second = sections.next();
-		let has_props = first == "" && second.is_some();
+		let has_props = first.is_empty() && second.is_some();
 
 		if has_props {
 			let props = second.expect("impossible: checked in has_props").to_owned();
@@ -53,7 +53,7 @@ impl Note {
 		self.content = sections.merge().content;
 	}
 
-	pub fn get_props(&self) -> Option<String> { self.split().props; todo!("parse YAML props and turn into JSON") }
+	pub fn get_props(&self) -> Option<String> { let _ = self.split().props; todo!("parse YAML props and turn into JSON") }
 
 	pub fn change_props() { todo!() }
 }

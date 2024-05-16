@@ -47,12 +47,12 @@ impl Vault {
 		for (name, flow) in flows {
 			self.flows.insert(name, flow);
 		}
-		return self;
+		self
 	}
 
 	pub fn register_flow(mut self, name: &str, flow: IFlow) -> Self {
-		self.flows.insert(name.to_string(), flow).expect(&format!("Flow {name} already exists"));
-		return self;
+		self.flows.insert(name.to_string(), flow).unwrap_or_else(|| panic!("Flow {name} already exists"));
+		self
 	}
 
 	pub fn execute (&self) -> Result<()> {
@@ -66,6 +66,6 @@ impl Vault {
 		let flow = self.flows.get(&args.flow).ok_or(anyhow!("Flow not found"))?;
 		let config = &self.config;
 		let origin = args.origin;
-		flow.execute(&config, origin) 
+		flow.execute(config, origin) 
 	}
 }

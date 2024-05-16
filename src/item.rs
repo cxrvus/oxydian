@@ -3,7 +3,7 @@ use std::{fs::{self, read_dir}, path::{Path, PathBuf}};
 use anyhow::{anyhow, Result};
 
 
-const ALLOWED_EXTENSIONS: [&'static str; 13] = ["md", "json", "pdf", "jpg", "jpeg", "png", "webp", "svg", "gif", "mp4", "mp3", "ogg", "wav"];
+const ALLOWED_EXTENSIONS: [&str; 13] = ["md", "json", "pdf", "jpg", "jpeg", "png", "webp", "svg", "gif", "mp4", "mp3", "ogg", "wav"];
 
 pub struct Item {
 	path: PathBuf,
@@ -36,7 +36,7 @@ impl Item {
 		Ok(())
 	}
 
-	pub fn mv(&mut self, target_dir: &PathBuf) -> Result<()> {
+	pub fn mv(&mut self, target_dir: &Path) -> Result<()> {
 		if !target_dir.is_dir() { return Err(anyhow!("Target needs to be a directory")); }
 
 		let new_path = target_dir.join(self.name());
@@ -57,7 +57,7 @@ impl Item {
 				let extension = path.extension()?.to_str()?.to_string();
 				if !ALLOWED_EXTENSIONS.contains(&extension.as_str()) { return None; }
 
-				Some(Self::get(&path).ok()?)
+				Self::get(&path).ok()
 			})
 			.collect();
 
