@@ -3,8 +3,6 @@ use std::{fs::{self, read_dir}, path::{Path, PathBuf}};
 use anyhow::{anyhow, Result};
 
 
-const ALLOWED_EXTENSIONS: [&str; 13] = ["md", "json", "pdf", "jpg", "jpeg", "png", "webp", "svg", "gif", "mp4", "mp3", "ogg", "wav"];
-
 pub struct Item {
 	path: PathBuf,
 }
@@ -53,10 +51,6 @@ impl Item {
 				let dir_entry = dir_entry.ok()?;
 				if !&dir_entry.file_type().ok()?.is_file() { return None; }
 				let path = dir_entry.path();
-
-				let extension = path.extension()?.to_str()?.to_string();
-				if !ALLOWED_EXTENSIONS.contains(&extension.as_str()) { return None; }
-
 				Self::get(&path).ok()
 			})
 			.collect();
