@@ -1,5 +1,4 @@
-use crate::{cli::{parse_args, Command, FlowArgs}, flow::IFlow, util::*, vault_config::VaultConfig};
-
+use crate::{cli::*, flow::IFlow, util::*, vault_config::*};
 
 
 pub struct Vault {
@@ -9,17 +8,22 @@ pub struct Vault {
 
 
 impl Vault {
-	pub fn new() -> Result<Self> {
-		Vault::with_flows(HashMap::new())
+	pub fn new(vault_setup: VaultSetup) -> Result<Self> {
+		Ok(Self {
+			config: VaultConfig::from(vault_setup),
+			flows: HashMap::new()
+		})
 	}
 
-	pub fn with_flows(flows: HashMap<String, IFlow>) -> Result<Self> {
-		let config = VaultConfig::load()?;
-		Ok(Vault { config, flows })
+	pub fn with_flows(mut self, flows: HashMap<String, IFlow>) -> Self {
+		for (name, flow) in flows {
+			self.flows.insert(name, flow);
+		}
+		return self;
 	}
 
 	pub fn register_flow(mut self, name: &str, flow: IFlow) -> Self {
-		self.flows.insert(name.to_string(), flow).expect("Flow already exists");
+		self.flows.insert(name.to_string(), flow).expect(&format!("Flow {name} already exists"));
 		return self;
 	}
 
