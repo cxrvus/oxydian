@@ -1,4 +1,4 @@
-use crate::{flow::IFlow, util::*, vault_config::*};
+use crate::{flow::Flow, util::*, vault_config::*};
 use clap::{Parser, Subcommand};
 
 
@@ -32,7 +32,7 @@ pub fn parse_args() -> Result<Cli> {
 
 pub struct Vault {
 	config: VaultConfig,
-	flows: HashMap<String, IFlow>
+	flows: HashMap<String, Flow>
 }
 
 impl Vault {
@@ -43,14 +43,14 @@ impl Vault {
 		})
 	}
 
-	pub fn with_flows(mut self, flows: HashMap<String, IFlow>) -> Self {
+	pub fn with_flows(mut self, flows: HashMap<String, Flow>) -> Self {
 		for (name, flow) in flows {
 			self.flows.insert(name, flow);
 		}
 		self
 	}
 
-	pub fn register_flow(mut self, name: &str, flow: IFlow) -> Self {
+	pub fn register_flow(mut self, name: &str, flow: Flow) -> Self {
 		self.flows.insert(name.to_string(), flow).unwrap_or_else(|| panic!("Flow {name} already exists"));
 		self
 	}

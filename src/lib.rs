@@ -8,7 +8,7 @@ pub mod vault_config;
 
 pub mod prelude {
 	pub use super::util::*;
-	pub use super::flow::IFlow::*;
+	pub use super::flow::Flow;
 	pub use super::vault::Vault;
 	pub use super::vault_config::VaultSetup;
 }
