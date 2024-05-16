@@ -22,7 +22,7 @@ pub struct FlowArgs {
 	pub dry_run: bool,
 	#[arg(required = true)]
 	pub flow: String,
-	pub origin: Option<String>,
+	pub note: Option<PathBuf>,
 }
 
 pub fn parse_args() -> Result<Cli> {
@@ -65,7 +65,7 @@ impl Vault {
 	fn run_flow(&self, args: FlowArgs) -> Result<()> {
 		let flow = self.flows.get(&args.flow).ok_or(anyhow!("Flow not found"))?;
 		let config = &self.config;
-		let origin = args.origin;
-		flow.execute(config, origin) 
+		let note = args.note;
+		flow.execute(config, note) 
 	}
 }
