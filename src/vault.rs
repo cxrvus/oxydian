@@ -26,7 +26,7 @@ pub struct FlowArgs {
 }
 
 pub fn parse_args() -> Result<Cli> {
-	Cli::try_parse().context("Failed to parse CLI arguments")
+	Cli::try_parse().map_err(|e| anyhow!(e))
 }
 
 
