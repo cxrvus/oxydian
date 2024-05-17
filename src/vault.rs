@@ -13,7 +13,7 @@ pub struct Cli {
 #[derive(Subcommand, Debug)]
 pub enum Command {
 	#[clap(name = "flow", about = "Run a flow")]
-	Flow(FlowArgs),
+	ExecuteFlow(FlowArgs),
 }
 
 #[derive(Parser, Debug)]
@@ -58,7 +58,7 @@ impl Vault {
 	pub fn execute (&self) -> Result<()> {
 		let command = parse_args()?.command;
 		match command {
-			Command::Flow(args) => self.run_flow(args),
+			Command::ExecuteFlow(args) => self.run_flow(args),
 		}
 	}
 
