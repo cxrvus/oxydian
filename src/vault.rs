@@ -45,16 +45,17 @@ impl Vault {
 		})
 	}
 
-	pub fn with_flows(mut self, flows: FlowMap) -> Self {
+	pub fn with_flows(mut self, flows: FlowMap) -> Result<Self> {
 		for (name, flow) in flows {
-			self.flows.insert(name, flow);
+			self = self.register_flow(&name, flow)?;
 		}
-		self
+		Ok(self)
 	}
 
-	pub fn register_flow(mut self, name: &str, flow: Flow) -> Self {
-		self.flows.insert(name.to_string(), flow).unwrap_or_else(|| panic!("Flow {name} already exists"));
-		self
+	pub fn register_flow(mut self, name: &str, flow: Flow) -> Result<Self> {
+		let old_entry = self.flows.insert(name.into(), flow);
+		if old_entry.is_some() { Err(anyhow!("Flow with name {name} already exists")) }
+		else { Ok(self) }
 	}
 
 	pub fn execute (&self) -> Result<()> {
