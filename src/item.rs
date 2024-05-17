@@ -8,11 +8,11 @@ pub struct Item {
 }
 
 impl Item {
-	pub fn get(path: &PathBuf) -> Result<Self> {
+	pub fn get(path: PathBuf) -> Result<Self> {
 		if !path.exists() { return Err(anyhow!("File does not exist")); }
 		if !path.is_file() { return Err(anyhow!("Path is not a file")); }
 
-		Ok(Self { path: PathBuf::from(path) })
+		Ok(Self { path })
 	}
 
 	pub fn path(&self) -> &PathBuf { &self.path }
@@ -51,7 +51,7 @@ impl Item {
 				let dir_entry = dir_entry.ok()?;
 				if !&dir_entry.file_type().ok()?.is_file() { return None; }
 				let path = dir_entry.path();
-				Self::get(&path).ok()
+				Self::get(path).ok()
 			})
 			.collect();
 

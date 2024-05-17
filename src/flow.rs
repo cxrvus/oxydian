@@ -22,7 +22,7 @@ impl Flow {
 	}
 
 	fn get_origin_note(note_path: PathBuf) -> Result<Note> {
-		let note_item = Item::get(&note_path).map_err(|_| anyhow!("Failed to get origin note file"))?;
+		let note_item = Item::get(note_path).map_err(|_| anyhow!("Failed to get origin note file"))?;
 		let note = note_item.note().ok_or_else(|| anyhow!("Origin note is not a markdown file"))?;
 		Ok(note)
 	}
