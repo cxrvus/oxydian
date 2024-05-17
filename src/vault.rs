@@ -30,20 +30,22 @@ pub fn parse_args() -> Result<Cli> {
 }
 
 
+pub type FlowMap = HashMap<String, Flow>;
+
 pub struct Vault {
 	config: VaultConfig,
-	flows: HashMap<String, Flow>
+	flows: FlowMap,
 }
 
 impl Vault {
 	pub fn new(vault_setup: VaultSetup) -> Result<Self> {
 		Ok(Self {
 			config: VaultConfig::from(vault_setup),
-			flows: HashMap::new()
+			flows: FlowMap::new()
 		})
 	}
 
-	pub fn with_flows(mut self, flows: HashMap<String, Flow>) -> Self {
+	pub fn with_flows(mut self, flows: FlowMap) -> Self {
 		for (name, flow) in flows {
 			self.flows.insert(name, flow);
 		}

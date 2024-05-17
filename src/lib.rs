@@ -10,6 +10,6 @@ pub mod prelude {
 	pub use super::util::*;
 	pub use super::flow::Flow;
 	pub use super::item::Item;
-	pub use super::vault::Vault;
+	pub use super::vault::{FlowMap, Vault};
 	pub use super::vault_config::VaultSetup;
 }
