@@ -1,4 +1,4 @@
-use crate::{flow::Flow, util::*, vault::*};
+use crate::{flow::*, util::*, vault::*};
 use clap::{Parser, Subcommand};
 
 
@@ -30,8 +30,6 @@ pub fn parse_args() -> Result<Cli> {
 }
 
 
-pub type FlowMap = HashMap<String, Flow>;
-
 pub struct App {
 	config: Vault,
 	flows: FlowMap,
@@ -45,17 +43,18 @@ impl App {
 		})
 	}
 
-	pub fn with_flows(mut self, flows: FlowMap) -> Result<Self> {
-		for (name, flow) in flows {
-			self = self.register_flow(&name, flow)?;
+	pub fn with_flows(mut self, flows: FlowList) -> Result<Self> {
+		for flow in flows {
+			self = self.register_flow(flow)?;
 		}
 		Ok(self)
 	}
 
-	pub fn register_flow(mut self, name: &str, flow: Flow) -> Result<Self> {
-		let old_entry = self.flows.insert(name.into(), flow);
-		if old_entry.is_some() { Err(anyhow!("Flow with name {name} already exists")) }
-		else { Ok(self) }
+	pub fn register_flow(mut self, flow: Flow) -> Result<Self> {
+		let name = flow.name;
+		if self.flows.contains_key(name) { return Err(anyhow!("Flow with name {name} already exists")); }
+		else { self.flows.insert(name.to_string(), flow); }
+		Ok(self)
 	}
 
 	pub fn execute (&self) -> Result<()> {
@@ -69,6 +68,6 @@ impl App {
 		let flow = self.flows.get(&args.flow).ok_or(anyhow!("Flow not found"))?;
 		let config = &self.config;
 		let note = args.note;
-		flow.execute(config, note) 
+		flow.func.execute(config, note) 
 	}
 }

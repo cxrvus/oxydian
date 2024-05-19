@@ -1,22 +1,30 @@
 use crate::{item::Item, note::Note, util::*, vault::Vault};
 
 
-pub enum Flow {
-	Free (fn(&Vault) -> Result<()>),
-	Note (fn(&Vault, &Note) -> Result<()>),
-	Mutating (fn(&Vault, &mut Note) -> Result<()>),
+pub type FlowMap = HashMap<String, Flow>;
+pub type FlowList = Vec<Flow>;
+
+pub struct Flow {
+	pub name: &'static str,
+	pub func: FlowFn,
 }
 
-impl Flow {
+pub enum FlowFn {
+	FreeFn (fn(&Vault) -> Result<()>),
+	NoteFn (fn(&Vault, &Note) -> Result<()>),
+	MutatingFn (fn(&Vault, &mut Note) -> Result<()>),
+}
+
+impl FlowFn {
 	pub fn execute(&self, config: &Vault, note_path: Option<PathBuf>) -> Result<()> {
 		match (self, note_path) {
-			(Self::Free(flow), None) 				=> flow(config),
-			(Self::Note(flow), Some(note_path)) 	=> flow(config, &Self::get_origin_note(note_path)?),
-			(Self::Mutating(flow), Some(note_path)) => flow(config, &mut Self::get_origin_note(note_path)?),
+			(Self::FreeFn(flow), None) 				=> flow(config),
+			(Self::NoteFn(flow), Some(note_path)) 	=> flow(config, &Self::get_origin_note(note_path)?),
+			(Self::MutatingFn(flow), Some(note_path)) => flow(config, &mut Self::get_origin_note(note_path)?),
 
-			(Self::Free(_), Some(_)) 	=> Err(anyhow!("FreeFlows do not accept an origin note")),
-			(Self::Note(_), None) 		=> Err(anyhow!("Note flows require an origin note")),
-			(Self::Mutating(_), None) 	=> Err(anyhow!("Mutating note flows require an origin note")),
+			(Self::FreeFn(_), Some(_)) 	=> Err(anyhow!("FreeFlows do not accept an origin note")),
+			(Self::NoteFn(_), None) 		=> Err(anyhow!("Note flows require an origin note")),
+			(Self::MutatingFn(_), None) 	=> Err(anyhow!("Mutating note flows require an origin note")),
 
 		}
 	}
