@@ -1,5 +1,5 @@
 use crate::note::Note;
-use std::{fs::{self, read_dir}, path::{Path, PathBuf}};
+use std::{fs, path::{Path, PathBuf}};
 use anyhow::{anyhow, Result};
 
 
@@ -42,19 +42,5 @@ impl Item {
 
 		self.path = new_path;
 		Ok(())
-	}
-
-	pub fn ls(&self, folder: &PathBuf) -> Result<Vec<Self>> {
-		let dir = read_dir(folder)?;
-		let files = dir
-			.filter_map(|dir_entry| {
-				let dir_entry = dir_entry.ok()?;
-				if !&dir_entry.file_type().ok()?.is_file() { return None; }
-				let path = dir_entry.path();
-				Self::get(path).ok()
-			})
-			.collect();
-
-		Ok(files)
 	}
 }

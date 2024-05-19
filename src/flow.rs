@@ -1,14 +1,14 @@
-use crate::{item::Item, note::Note, util::*, vault_config::VaultConfig};
+use crate::{item::Item, note::Note, util::*, vault::Vault};
 
 
 pub enum Flow {
-	Free (fn(&VaultConfig) -> Result<()>),
-	Note (fn(&VaultConfig, &Note) -> Result<()>),
-	Mutating (fn(&VaultConfig, &mut Note) -> Result<()>),
+	Free (fn(&Vault) -> Result<()>),
+	Note (fn(&Vault, &Note) -> Result<()>),
+	Mutating (fn(&Vault, &mut Note) -> Result<()>),
 }
 
 impl Flow {
-	pub fn execute(&self, config: &VaultConfig, note_path: Option<PathBuf>) -> Result<()> {
+	pub fn execute(&self, config: &Vault, note_path: Option<PathBuf>) -> Result<()> {
 		match (self, note_path) {
 			(Self::Free(flow), None) 				=> flow(config),
 			(Self::Note(flow), Some(note_path)) 	=> flow(config, &Self::get_origin_note(note_path)?),
