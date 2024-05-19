@@ -9,8 +9,8 @@ pub struct Item {
 
 impl Item {
 	pub fn get(path: PathBuf) -> Result<Self> {
-		if !path.exists() { return Err(anyhow!("File does not exist")); }
-		if !path.is_file() { return Err(anyhow!("Path is not a file")); }
+		if !path.exists() { return Err(anyhow!("File {} does not exist", path.to_str().unwrap())); }
+		if !path.is_file() { return Err(anyhow!("Path {} is not a file", path.to_str().unwrap())); }
 
 		Ok(Self { path })
 	}
