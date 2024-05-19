@@ -1,4 +1,4 @@
-use crate::{item::Item, util::*};
+use crate::{item::Item, note::Note, util::*};
 use std::fs;
 
 
@@ -17,12 +17,27 @@ impl From<VaultConfig> for Vault {
 }
 
 impl Vault {
-	pub fn path(&self, path: &str) -> PathBuf {
-		self.root_path.clone().join(path)
+	pub fn path(&self, sub_path: &str) -> PathBuf {
+		self.root_path.clone().join(sub_path)
 	}
 
-	pub fn ls(&self, folder: &str) -> Result<Vec<Item>> {
-		let folder = self.path(folder);
+	pub fn get(&self, sub_path: &str) -> Result<Item> {
+		Item::get(self.path(sub_path))
+	}
+
+	pub fn get_note(&self, sub_path: &str) -> Option<Note> {
+		self.get(sub_path).ok()?.note()
+	}
+
+	pub fn get_props<'a, T: Deserialize<'a>>(&self, sub_path: &str) -> Option<T> {
+		self.get_note(sub_path)?.get_props::<T>()
+	}
+
+	pub fn ls(&self, sub_dir: &str) -> Result<Vec<Item>> {
+		self.ls_absolute(self.path(sub_dir))
+	}
+
+	pub fn ls_absolute(&self, folder: PathBuf) -> Result<Vec<Item>> {
 		let dir = fs::read_dir(folder)?;
 		let files = dir
 			.filter_map(|dir_entry| {

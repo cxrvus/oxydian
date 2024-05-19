@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 pub struct Note
 {
 	content: String,
@@ -35,7 +37,7 @@ impl Note {
 		self.content = sections.merge().content;
 	}
 
-	pub fn get_props(&self) -> Option<String> { let _ = self.split().props; todo!("parse YAML props and turn into JSON") }
+	pub fn get_props<'a, T: Deserialize<'a>>(&self) -> Option<T> { let _props = self.split().props; todo!("parse YAML props and turn into JSON") }
 
 	pub fn change_props() { todo!() }
 
