@@ -6,8 +6,8 @@ pub struct Note
 }
 
 struct NoteSections {
-	content: String,
 	props: Option<String>,
+	content: String,
 }
 
 impl NoteSections {
@@ -42,21 +42,17 @@ impl Note {
 	pub fn change_props() { todo!() }
 
 	fn split(&self) -> NoteSections {
-		let full_content = self.content.clone();
-		let mut sections = full_content.split("---\n");
-
-		let first = sections.next().expect("impossible: split always returns at least one element");
-		let second = sections.next();
-		let has_props = first.is_empty() && second.is_some();
-
-		if has_props {
-			let props = second.expect("impossible: checked in has_props").to_owned();
-			let content = sections.collect::<String>();
-			NoteSections { content, props: Some(props) }
-		}
-		else {
-			NoteSections { content: full_content, props: None }
+		let re = regex::Regex::new(r"^\s*---\r?\n((?s).*?(?-s))---\r?\n((?s).*(?-s))$").unwrap();
+		let caps = re.captures(&self.content);
+		match caps {
+			Some(caps) => NoteSections {
+				props: Some(caps.get(1).unwrap().as_str().to_string()),
+				content: caps.get(2).unwrap().as_str().to_string(),
+			},
+			None => NoteSections {
+				props: None,
+				content: self.content.clone(),
+			},
 		}
 	}
-
 }
