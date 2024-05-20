@@ -22,7 +22,7 @@ pub struct FlowArgs {
 	pub dry_run: bool,
 	#[arg(required = true)]
 	pub flow: String,
-	pub note: Option<PathBuf>,
+	pub note_path: Option<PathBuf>,
 }
 
 pub fn parse_args() -> Result<Cli> {
@@ -67,7 +67,7 @@ impl App {
 	fn run_flow(&self, args: FlowArgs) -> Result<()> {
 		let flow = self.flows.get(&args.flow).ok_or(anyhow!("Flow not found"))?;
 		let config = &self.config;
-		let note = args.note;
-		flow.func.execute(config, note) 
+		let note_path = args.note_path;
+		flow.func.execute(config, note_path) 
 	}
 }
