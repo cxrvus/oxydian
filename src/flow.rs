@@ -21,7 +21,7 @@ impl FlowFn {
 
 			(Self::NoteFn(_) | Self::MutatingFn(_), Some(note_path)) => {
 				let mut note = Item::get(note_path).map_err(|_| anyhow!("Failed to get origin note file"))?;
-				note.note().ok_or_else(|| anyhow!("Origin note is not a markdown file"))?;
+				note.note().map_err(|e| anyhow!("Origin note is not a valid note: {}", e))?;
 
 				match self {
 					Self::NoteFn(flow) 		=> flow(config, &note),

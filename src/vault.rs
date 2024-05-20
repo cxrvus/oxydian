@@ -1,4 +1,4 @@
-use crate::{item::Item, note::Note, util::*};
+use crate::{item::Item, util::*};
 use std::fs;
 
 
@@ -23,14 +23,6 @@ impl Vault {
 
 	pub fn get(&self, sub_path: &str) -> Result<Item> {
 		Item::get(self.path(sub_path))
-	}
-
-	pub fn get_note(&self, sub_path: &str) -> Option<Note> {
-		self.get(sub_path).ok()?.note()
-	}
-
-	pub fn get_props<'a, T: Deserialize<'a>>(&self, sub_path: &str) -> Option<T> {
-		self.get_note(sub_path)?.get_props::<T>()
 	}
 
 	pub fn ls(&self, sub_dir: &str) -> Result<Vec<Item>> {
