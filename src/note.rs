@@ -37,7 +37,10 @@ impl Note {
 		self.content = sections.merge().content;
 	}
 
-	pub fn get_props<'a, T: Deserialize<'a>>(&self) -> Option<T> { let _props = self.split().props; todo!("parse YAML props and turn into JSON") }
+	pub fn get_props<'a, T: Deserialize<'a>>(&'a self) -> Option<T> { 
+		let props = self.split().props?;
+		serde_yaml::from_str::<T>(props).ok()
+	}
 
 	pub fn change_props() { todo!() }
 
