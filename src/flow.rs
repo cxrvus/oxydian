@@ -1,5 +1,38 @@
 use crate::{file::File, util::*, vault::Vault};
 
+#[derive(Default)]
+pub struct FlowController {
+	flows: HashMap<String, Flow>,
+}
+
+impl FlowController {
+	pub fn new() -> Self { Default::default() }
+
+	pub fn run(&self, flow: String, vault: &Vault, file_path: Option<PathBuf>) -> Result<()> {
+		let flow = self.flows.get(&flow).ok_or(anyhow!("Flow not found"))?;
+		let file_path = file_path.map(|file_path| { 
+			if file_path.is_absolute() { file_path }
+			else { vault.root_path().join(file_path) }
+		});
+		flow.func.execute(vault, file_path)?;
+		Ok(())
+	}
+
+	pub fn register_flows(mut self, flows: Vec<Flow>) -> Result<Self> {
+		for flow in flows {
+			self = self.register_flow(flow)?;
+		}
+		Ok(self)
+	}
+
+	pub fn register_flow(mut self, flow: Flow) -> Result<Self> {
+		let name = flow.name;
+		if self.flows.contains_key(name) { return Err(anyhow!("Flow with name {name} already exists")); }
+		else { self.flows.insert(name.to_string(), flow); }
+		Ok(self)
+	}
+
+}
 
 pub struct Flow {
 	pub name: &'static str,
