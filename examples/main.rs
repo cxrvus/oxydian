@@ -1,4 +1,5 @@
-use oxydian::prelude::*;
+use oxydian::{controller::Controller, prelude::*};
+
 
 fn main() {
 	if let Err(e) = execute() { eprintln!("<!>\n{}", e); }
@@ -10,13 +11,13 @@ fn execute() -> Result<()> {
 			sub_paths: SubPaths {
 				notes: Some("Notes".into()),
 			},
-			flows: FlowController::new()
-				.register_flows(vec![
+			flows: Controller::<Flow>::new()
+				.register_many(vec![
 					Flow {
 						name: "test_flow",
 						func: FreeFn(|vault| {
-							vault.flows.run("sub_flow", vault, None)?;
-							Ok(())
+							let sub_flow = vault.flows.get("sub_flow").ok_or(anyhow!("sub_flow not found"))?;
+							sub_flow.func.execute(vault, None)
 						}),
 					},
 				])?,

@@ -1,11 +1,11 @@
-use crate::{file::File, flow::FlowController, util::*};
+use crate::{controller::Controller, file::File, flow::Flow, util::*};
 use std::fs;
 
 
 pub struct Vault {
 	pub root_path: PathBuf,
 	pub sub_paths: SubPaths,
-	pub flows: FlowController,
+	pub flows: Controller<Flow>,
 }
 
 pub struct SubPaths {

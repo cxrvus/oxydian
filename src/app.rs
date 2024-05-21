@@ -42,17 +42,20 @@ impl App {
 	pub fn execute (&self) -> Result<()> {
 		let command = parse_args()?.command;
 		match command {
-			Command::ExecuteFlow(FlowArgs { flow, file_path }) => self.vault.flows.run(&flow, &self.vault, file_path),
+			Command::ExecuteFlow(FlowArgs { flow, file_path }) => { 
+				let flow = self.vault.flows.get(&flow).ok_or(anyhow!("Flow not found: {flow}"))?;
+				flow.func.execute(&self.vault, file_path)
+			}
 		}
 	}
 
 	pub fn register_flows(mut self, flows: Vec<Flow>) -> Result<Self> {
-		self.vault.flows = self.vault.flows.register_flows(flows)?;
+		self.vault.flows = self.vault.flows.register_many(flows)?;
 		Ok(self)
 	}
 
 	pub fn register_flow(mut self, flow: Flow) -> Result<Self> {
-		self.vault.flows = self.vault.flows.register_flow(flow)?;
+		self.vault.flows = self.vault.flows.register(flow)?;
 		Ok(self)
 	}
 }
