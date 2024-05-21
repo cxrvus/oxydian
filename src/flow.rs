@@ -1,9 +1,6 @@
 use crate::{file::File, util::*, vault::Vault};
 
 
-pub type FlowMap = HashMap<String, Flow>;
-pub type FlowList = Vec<Flow>;
-
 pub struct Flow {
 	pub name: &'static str,
 	pub func: FlowFn,

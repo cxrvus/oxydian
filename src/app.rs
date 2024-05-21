@@ -32,18 +32,18 @@ pub fn parse_args() -> Result<Cli> {
 
 pub struct App {
 	vault: Vault,
-	flows: FlowMap,
+	flows: HashMap<String, Flow>,
 }
 
 impl App {
 	pub fn new(vault_setup: VaultConfig) -> Result<Self> {
 		Ok(Self {
 			vault: Vault::from(vault_setup),
-			flows: FlowMap::new()
+			flows: Default::default(),
 		})
 	}
 
-	pub fn with_flows(mut self, flows: FlowList) -> Result<Self> {
+	pub fn with_flows(mut self, flows: Vec<Flow>) -> Result<Self> {
 		for flow in flows {
 			self = self.register_flow(flow)?;
 		}
