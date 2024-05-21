@@ -1,6 +1,7 @@
 pub mod app;
 pub mod flow;
 pub mod file;
+pub mod link;
 pub mod note;
 pub mod time;
 pub mod util;
