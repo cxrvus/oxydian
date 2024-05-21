@@ -3,11 +3,11 @@ use std::{fs, path::{Path, PathBuf}};
 use anyhow::{anyhow, Result};
 
 
-pub struct Item {
+pub struct File {
 	path: PathBuf,
 }
 
-impl Item {
+impl File {
 	pub fn get(path: PathBuf) -> Result<Self> {
 		if !path.exists() { return Err(anyhow!("File {} does not exist", path.to_str().unwrap())); }
 		if !path.is_file() { return Err(anyhow!("Path {} is not a file", path.to_str().unwrap())); }

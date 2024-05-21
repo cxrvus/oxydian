@@ -1,4 +1,4 @@
-use crate::{item::Item, util::*, vault::Vault};
+use crate::{file::File, util::*, vault::Vault};
 
 
 pub type FlowMap = HashMap<String, Flow>;
@@ -11,8 +11,8 @@ pub struct Flow {
 
 pub enum FlowFn {
 	FreeFn (fn(&Vault) -> Result<()>),
-	NoteFn (fn(&Vault, &Item) -> Result<()>),
-	MutatingFn (fn(&Vault, &mut Item) -> Result<()>),
+	NoteFn (fn(&Vault, &File) -> Result<()>),
+	MutatingFn (fn(&Vault, &mut File) -> Result<()>),
 }
 
 impl FlowFn {
@@ -20,7 +20,7 @@ impl FlowFn {
 		match (self, note_path) {
 
 			(Self::NoteFn(_) | Self::MutatingFn(_), Some(note_path)) => {
-				let mut note = Item::get(note_path).map_err(|_| anyhow!("Failed to get origin note file"))?;
+				let mut note = File::get(note_path).map_err(|_| anyhow!("Failed to get origin note file"))?;
 				note.note().map_err(|e| anyhow!("Origin note is not a valid note: {}", e))?;
 
 				match self {
