@@ -8,8 +8,8 @@ pub struct FlowController {
 impl FlowController {
 	pub fn new() -> Self { Default::default() }
 
-	pub fn run(&self, flow: String, vault: &Vault, file_path: Option<PathBuf>) -> Result<()> {
-		let flow = self.flows.get(&flow).ok_or(anyhow!("Flow not found"))?;
+	pub fn run(&self, flow: &str, vault: &Vault, file_path: Option<PathBuf>) -> Result<()> {
+		let flow = self.flows.get(flow).ok_or(anyhow!("Flow not found: {flow}"))?;
 		let file_path = file_path.map(|file_path| { 
 			if file_path.is_absolute() { file_path }
 			else { vault.root_path().join(file_path) }

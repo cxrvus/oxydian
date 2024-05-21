@@ -44,7 +44,7 @@ impl App {
 	pub fn execute (&self) -> Result<()> {
 		let command = parse_args()?.command;
 		match command {
-			Command::ExecuteFlow(FlowArgs { flow, file_path }) => self.flows.run(flow, &self.vault, file_path),
+			Command::ExecuteFlow(FlowArgs { flow, file_path }) => self.vault.flows.run(&flow, &self.vault, file_path),
 		}
 	}
 
