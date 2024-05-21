@@ -1,13 +1,13 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 pub struct Note
 {
 	content: String,
 }
 
-struct NoteSections<'a> {
-	props: Option<&'a str>,
-	content: &'a str,
+pub struct NoteSections<'a> {
+	pub props: Option<&'a str>,
+	pub content: &'a str,
 }
 
 impl<'a> NoteSections<'a> {
@@ -37,12 +37,16 @@ impl Note {
 		self.content = sections.merge().content;
 	}
 
-	pub fn get_props<'a, T: Deserialize<'a>>(&'a self) -> Option<T> { 
+	pub fn get_props<'a, T: Deserialize<'a> + Serialize>(&'a self) -> Option<T> { 
 		let props = self.split().props?;
 		serde_yaml::from_str::<T>(props).ok()
 	}
 
-	pub fn change_props() { todo!() }
+	pub fn change<'a, T: Deserialize<'a> + Serialize>(&'a mut self, func: fn(&mut NoteSections) -> ()) {
+		let mut sections = self.split();
+		func(&mut sections);
+		self.content = sections.merge().content;
+	}
 
 	fn split(&self) -> NoteSections {
 		let re = regex::Regex::new(r"^\s*---\r?\n((?s).*?(?-s))---\r?\n((?s).*(?-s))$").unwrap();
