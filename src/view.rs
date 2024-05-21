@@ -31,16 +31,16 @@ pub enum Line {
 
 impl From<View> for String {
 	fn from(view: View) -> Self {
-		view.lines.into_iter().map(|line| line.to_string()).collect()
+		view.lines.into_iter().map(|line| line.into_string()).collect()
 	}
 }
 
 impl Line {
-	pub fn to_tokens(self) -> Vec<Token> {
+	pub fn into_tokens(self) -> Vec<Token> {
 		self.into()
 	}
-	fn to_string(self) -> String {
-		self.to_tokens().into_iter().map(|token| token.to_string()).collect()
+	fn into_string(self) -> String {
+		self.into_tokens().into_iter().map(|token| token.into_string()).collect()
 	}
 }
 
@@ -66,7 +66,7 @@ impl From<Line> for Vec<Token> {
 }
 
 impl Token {
-	fn to_string(self) -> String {
+	fn into_string(self) -> String {
 		self.into()
 	}
 }
