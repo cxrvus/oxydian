@@ -2,7 +2,7 @@ use crate::link::*;
 
 
 pub struct View {
-	pub name: String,
+	pub name: &'static str,
 	pub lines: Vec<Line>,
 }
 
@@ -56,7 +56,12 @@ impl From<Line> for Vec<Token> {
 			Break => linebreak(vec![]),
 			Text(tokens) => tokens,
 			Paragraph(tokens) => linebreak(tokens),
-			Heading(_, _) => todo!(),
+			Heading(_, tokens) =>
+				vec![Token::Text("# ".into())].into_iter()
+				.chain(tokens)
+				.chain(vec![Token::Break])
+				.collect()
+			,
 			Bullet(_, _) => todo!(),
 			Check(_, _, _) => todo!(),
 		};
