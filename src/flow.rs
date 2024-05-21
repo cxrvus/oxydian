@@ -13,21 +13,21 @@ pub enum FlowFn {
 }
 
 impl FlowFn {
-	pub fn execute(&self, config: &Vault, note_path: Option<PathBuf>) -> Result<()> {
-		match (self, note_path) {
+	pub fn execute(&self, vault: &Vault, file_path: Option<PathBuf>) -> Result<()> {
+		match (self, file_path) {
 
-			(Self::NoteFn(_) | Self::MutatingFn(_), Some(note_path)) => {
-				let mut note = File::get(note_path).map_err(|_| anyhow!("Failed to get origin note file"))?;
+			(Self::NoteFn(_) | Self::MutatingFn(_), Some(file_path)) => {
+				let mut note = File::get(file_path).map_err(|_| anyhow!("Failed to get origin note file"))?;
 				note.note().map_err(|e| anyhow!("Origin note is not a valid note: {}", e))?;
 
 				match self {
-					Self::NoteFn(flow) 		=> flow(config, &note),
-					Self::MutatingFn(flow) 	=> flow(config, &mut note),
+					Self::NoteFn(flow) 		=> flow(vault, &note),
+					Self::MutatingFn(flow) 	=> flow(vault, &mut note),
 					_ 						=> unreachable!(),
 				}
 			} 
 
-			(Self::FreeFn(flow), None) 					=> flow(config),
+			(Self::FreeFn(flow), None) 					=> flow(vault),
 
 			(Self::NoteFn(_), None) 	=> Err(anyhow!("Note flows require an origin note")),
 			(Self::MutatingFn(_), None) => Err(anyhow!("Mutating note flows require an origin note")),

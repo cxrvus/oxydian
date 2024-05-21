@@ -1,10 +1,8 @@
 use crate::link::*;
 
 
-pub struct View {
-	pub name: &'static str,
-	pub lines: Vec<Line>,
-}
+
+pub struct View(pub Vec<Line>);
 
 #[derive(Default)]
 pub enum Token {
@@ -31,7 +29,7 @@ pub enum Line {
 
 impl From<View> for String {
 	fn from(view: View) -> Self {
-		view.lines.into_iter().map(|line| line.into_string()).collect()
+		view.0.into_iter().map(|line| line.into_string()).collect()
 	}
 }
 
@@ -39,7 +37,7 @@ impl Line {
 	pub fn into_tokens(self) -> Vec<Token> {
 		self.into()
 	}
-	fn into_string(self) -> String {
+	pub fn into_string(self) -> String {
 		self.into_tokens().into_iter().map(|token| token.into_string()).collect()
 	}
 }
