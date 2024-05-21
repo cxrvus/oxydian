@@ -36,9 +36,9 @@ pub struct App {
 }
 
 impl App {
-	pub fn new(vault_setup: VaultConfig) -> Result<Self> {
+	pub fn new(vault: Vault) -> Result<Self> {
 		Ok(Self {
-			vault: Vault::from(vault_setup),
+			vault,
 			flows: Default::default(),
 		})
 	}

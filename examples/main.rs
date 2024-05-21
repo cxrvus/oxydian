@@ -5,11 +5,14 @@ fn main() {
 }
 
 fn execute() -> Result<()> {
-	App::new(VaultConfig {
-			root_path:  "/home/cxrvus/Obsidian/TestVault".into()
+	App::new(Vault {
+			root_path: "/home/cxrvus/Obsidian/TestVault".into(),
+			sub_paths: SubPaths {
+				notes: Some("Notes".into()),
+			},
 		})?
 		.with_flows(flows::ViewController {
-			notes_path: "/home/cxrvus/Obsidian/TestVault/notes".into(),
+			notes_path: "Notes".into(),
 			views: Default::default(),
 		}.flows())?
 		.execute()?

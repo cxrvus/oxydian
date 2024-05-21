@@ -2,18 +2,13 @@ use crate::{file::File, util::*};
 use std::fs;
 
 
-pub struct VaultConfig {
-	pub root_path: String,
-}
-
 pub struct Vault {
-	root_path: PathBuf,
+	pub root_path: PathBuf,
+	pub sub_paths: SubPaths,
 }
 
-impl From<VaultConfig> for Vault {
-	fn from(raw: VaultConfig) -> Self {
-		Vault { root_path: PathBuf::from(raw.root_path) }
-	}
+pub struct SubPaths {
+	pub notes: Option<PathBuf>,
 }
 
 impl Vault {
