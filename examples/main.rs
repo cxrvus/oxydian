@@ -11,10 +11,6 @@ fn execute() -> Result<()> {
 				notes: Some("Notes".into()),
 			},
 		})?
-		.with_flows(flows::ViewController {
-			notes_path: "Notes".into(),
-			views: Default::default(),
-		}.flows())?
 		.execute()?
 	;
 
