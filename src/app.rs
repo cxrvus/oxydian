@@ -31,14 +31,14 @@ pub fn parse_args() -> Result<Cli> {
 
 
 pub struct App {
-	config: Vault,
+	vault: Vault,
 	flows: FlowMap,
 }
 
 impl App {
 	pub fn new(vault_setup: VaultConfig) -> Result<Self> {
 		Ok(Self {
-			config: Vault::from(vault_setup),
+			vault: Vault::from(vault_setup),
 			flows: FlowMap::new()
 		})
 	}
@@ -66,8 +66,11 @@ impl App {
 
 	fn run_flow(&self, args: FlowArgs) -> Result<()> {
 		let flow = self.flows.get(&args.flow).ok_or(anyhow!("Flow not found"))?;
-		let config = &self.config;
-		let note_path = args.note_path;
-		flow.func.execute(config, note_path) 
+		let vault = &self.vault;
+		let note_path = args.note_path.map(|path| { 
+			if path.is_absolute() { path }
+			else { vault.root_path().join(path) }
+		});
+		flow.func.execute(vault, note_path) 
 	}
 }

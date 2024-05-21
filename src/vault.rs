@@ -17,6 +17,10 @@ impl From<VaultConfig> for Vault {
 }
 
 impl Vault {
+	pub fn root_path(&self) -> &PathBuf {
+		&self.root_path
+	}
+
 	pub fn path(&self, sub_path: &str) -> PathBuf {
 		self.root_path.clone().join(sub_path)
 	}
