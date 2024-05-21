@@ -30,14 +30,12 @@ pub fn parse_args() -> Result<Cli> {
 
 pub struct App {
 	vault: Vault,
-	flows: FlowController,
 }
 
 impl App {
 	pub fn new(vault: Vault) -> Result<Self> {
 		Ok(Self {
 			vault,
-			flows: Default::default(),
 		})
 	}
 
@@ -49,12 +47,12 @@ impl App {
 	}
 
 	pub fn register_flows(mut self, flows: Vec<Flow>) -> Result<Self> {
-		self.flows = self.flows.register_flows(flows)?;
+		self.vault.flows = self.vault.flows.register_flows(flows)?;
 		Ok(self)
 	}
 
 	pub fn register_flow(mut self, flow: Flow) -> Result<Self> {
-		self.flows = self.flows.register_flow(flow)?;
+		self.vault.flows = self.vault.flows.register_flow(flow)?;
 		Ok(self)
 	}
 }

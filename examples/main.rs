@@ -10,6 +10,16 @@ fn execute() -> Result<()> {
 			sub_paths: SubPaths {
 				notes: Some("Notes".into()),
 			},
+			flows: FlowController::new()
+				.register_flows(vec![
+					Flow {
+						name: "test_flow",
+						func: FreeFn(|vault| {
+							vault.flows.run("sub_flow", vault, None)?;
+							Ok(())
+						}),
+					},
+				])?,
 		})?
 		.execute()?
 	;
