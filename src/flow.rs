@@ -23,7 +23,7 @@ impl FlowFn {
 
 			(Self::NoteFn(_) | Self::MutatingFn(_), Some(file_path)) => {
 				let mut note = File::get(file_path).map_err(|_| anyhow!("Failed to get origin note file"))?;
-				note.note().map_err(|e| anyhow!("Origin note is not a valid note: {}", e))?;
+				note.to_note().map_err(|e| anyhow!("Origin note is not a valid note: {}", e))?;
 
 				match self {
 					Self::NoteFn(flow) 		=> flow(vault, &note),

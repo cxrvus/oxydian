@@ -1,51 +1,61 @@
-use serde::{Deserialize, Serialize};
+use std::fs;
+use crate::{file::File, util::*};
 
-pub struct Note
+
+pub struct Note<'n>
 {
 	content: String,
+	file: &'n File,
 }
 
-pub struct NoteSections<'a> {
-	pub props: Option<&'a str>,
-	pub content: &'a str,
+pub struct NoteSections<'s> {
+	pub props: Option<&'s str>,
+	pub content: &'s str,
 }
 
-impl<'a> NoteSections<'a> {
-	fn merge(self) -> Note {
-		Note { content:
-			if let Some(props) = self.props {
-				format!("---\n{}\n---\n{}", props, self.content)
-			}
-			else {
-				self.content.to_string()
-			}
-		}
+impl<'s> NoteSections<'s> {
+	fn merge(self) -> String {
+		if let Some(props) = self.props { format!("---\n{}\n---\n{}", props, self.content) }
+		else { self.content.to_string() }
 	}
 }
 
-impl Note {
-	pub fn new(full_content: String) -> Self { Self { content: full_content } }
+impl<'n> Note<'n> {
+	pub fn new(file: &'n File) -> Result<Self> {
+		if file.ext() != "md" { return Err(anyhow!("File {} is not a markdown file", file.path().to_str().unwrap())); }
+		let content = fs::read_to_string(file.path())?;
+		Ok(Self { file, content })
+	}
 
-	pub fn full_content(&self) -> &str { &self.content }
+	pub fn get_full_content(&self) -> &str { &self.content }
 
 	pub fn get_content(&self) -> &str { self.split().content }
 
-	pub fn set_content(&mut self, new_content: &str) {
-		let new_content = new_content.trim();
-		let mut sections = self.split();
-		sections.content = new_content;
-		self.content = sections.merge().content;
+	pub fn get_props<'de, T: Deserialize<'de> + Serialize>(&'de self) -> Result<T> { 
+		let props = self.split().props.ok_or(anyhow!("No properties found"))?;
+		serde_yaml::from_str::<T>(props).map_err(|e| anyhow!("Could not parse properties:\n{}", e))
 	}
 
-	pub fn get_props<'a, T: Deserialize<'a> + Serialize>(&'a self) -> Option<T> { 
-		let props = self.split().props?;
-		serde_yaml::from_str::<T>(props).ok()
+	pub fn change_content(&mut self, func: fn(&mut String) -> Result<()>) -> Result<()> {
+		let mut content = self.get_content().to_string();
+		func(&mut content)?;
+		self.content = NoteSections { content: &content, ..self.split() }.merge();
+		Ok(())
 	}
 
-	pub fn change<'a, T: Deserialize<'a> + Serialize>(&'a mut self, func: fn(&mut NoteSections) -> ()) {
-		let mut sections = self.split();
-		func(&mut sections);
-		self.content = sections.merge().content;
+	pub fn change_props<'de, T: Deserialize<'de> + Serialize>(&'de mut self, func: fn(&mut Result<T>) -> Result<()>) -> Result<()> {
+		let mut props = self.get_props();
+		func(&mut props)?;
+		// todo: fix
+		// if let Ok(props) = props {
+		// 	let props = serde_yaml::to_string(&props)?;
+		// 	self.content = NoteSections { props: Some(&props), ..self.split() }.merge();
+		// }
+		Ok(())
+	}
+
+	pub fn write(self) -> Result<()> {
+		fs::write(self.file.path(), self.content).map_err(|e| anyhow!("Could not write to note:\n{}\n{:?}", e, self.file.path()))
 	}
 
 	fn split(&self) -> NoteSections {
@@ -58,7 +68,7 @@ impl Note {
 			},
 			None => NoteSections {
 				props: None,
-				content: self.content.as_str(),
+				content: &self.content,
 			},
 		}
 	}

@@ -21,11 +21,7 @@ impl File {
 	pub fn stem(&self) -> &str { self.path.file_stem().unwrap_or_default().to_str().unwrap() }
 	pub fn ext(&self)  -> &str { self.path.extension().unwrap_or_default().to_str().unwrap() }
 
-	pub fn note(&self) -> Result<Note> {
-		if self.ext() != "md" { return Err(anyhow!("File {} is not a markdown file", self.path().to_str().unwrap())); }
-		let content = fs::read_to_string(self.path())?;
-		Ok(Note::new(content))
-	}
+	pub fn to_note(&self) -> Result<Note> { Note::new(&self) }
 
 	pub fn rm(self) -> Result<()> {
 		fs::remove_file(self.path())?;
