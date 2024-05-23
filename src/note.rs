@@ -31,7 +31,7 @@ impl<'n> Note<'n> {
 
 	pub fn get_content(&self) -> &str { self.split().content }
 
-	pub fn get_props<'de, T>(&'de self) -> Result<T> 
+	pub fn get_props<T>(&self) -> Result<T> 
 		where T: DeserializeOwned
 	{ 
 		let props = self.split().props.ok_or(anyhow!("No properties found"))?;

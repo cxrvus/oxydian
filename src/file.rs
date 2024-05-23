@@ -21,7 +21,7 @@ impl File {
 	pub fn stem(&self) -> &str { self.path.file_stem().unwrap_or_default().to_str().unwrap() }
 	pub fn ext(&self)  -> &str { self.path.extension().unwrap_or_default().to_str().unwrap() }
 
-	pub fn to_note(&self) -> Result<Note> { Note::new(&self) }
+	pub fn to_note(&self) -> Result<Note> { Note::new(self) }
 
 	pub fn rm(self) -> Result<()> {
 		fs::remove_file(self.path())?;
