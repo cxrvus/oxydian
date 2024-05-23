@@ -6,24 +6,23 @@ fn main() {
 }
 
 fn execute() -> Result<()> {
-	App::new(Vault {
+	App {
+		vault: Vault {
 			root_path: "/home/cxrvus/Obsidian/TestVault".into(),
 			sub_paths: SubPaths {
 				notes: Some("Notes".into()),
 			},
-			flows: FlowController::new()
-				.register_many(vec![
-					Flow {
-						name: "test_flow",
-						func: FreeFn(|vault| {
-							let sub_flow = vault.flows.get("sub_flow").ok_or(anyhow!("sub_flow not found"))?;
-							sub_flow.func.execute(vault, None)
-						}),
-					},
-				])?,
-		})?
-		.execute()?
-	;
+		},
+		flows: FlowController::new().register_many(vec![
+			Flow {
+				name: "test_flow",
+				func: FreeFn(|_| {
+					println!("Hello World!");
+					Ok(())
+				}),
+			},
+		])?,
+	};
 
 	Ok(())
 }

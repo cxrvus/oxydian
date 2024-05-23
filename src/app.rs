@@ -1,4 +1,4 @@
-use crate::{flow::*, util::*, vault::*};
+use crate::{file::File, flow::*, util::*, vault::*};
 use clap::{Parser, Subcommand};
 
 
@@ -29,33 +29,26 @@ pub fn parse_args() -> Result<Cli> {
 
 
 pub struct App {
-	vault: Vault,
+	pub vault: Vault,
+	pub flows: FlowController,
 }
 
 impl App {
-	pub fn new(vault: Vault) -> Result<Self> {
-		Ok(Self {
-			vault,
-		})
-	}
-
 	pub fn execute (&self) -> Result<()> {
 		let command = parse_args()?.command;
 		match command {
 			Command::ExecuteFlow(FlowArgs { flow, file_path }) => { 
-				let flow = self.vault.flows.get(&flow).ok_or(anyhow!("Flow not found: {flow}"))?;
-				flow.func.execute(&self.vault, file_path)
+				let file = file_path
+					.map(|file_path| { 
+						if file_path.is_absolute() { file_path }
+						else { self.vault.root_path().join(file_path) }
+					})
+					.map(|file_path| File::get(file_path).map_err(|_| anyhow!("Failed to get origin note file")))
+					.transpose()?
+				;
+
+				self.flows.execute(&flow, &self.vault, file)
 			}
 		}
-	}
-
-	pub fn register_flows(mut self, flows: Vec<Flow>) -> Result<Self> {
-		self.vault.flows = self.vault.flows.register_many(flows)?;
-		Ok(self)
-	}
-
-	pub fn register_flow(mut self, flow: Flow) -> Result<Self> {
-		self.vault.flows = self.vault.flows.register(flow)?;
-		Ok(self)
 	}
 }

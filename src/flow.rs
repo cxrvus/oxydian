@@ -25,7 +25,9 @@ impl FlowController {
 	pub fn new() -> Self { Self(Default::default()) }
 
 	#[inline]
-	pub fn get(&self, name: &str) -> Option<&Flow> { self.0.get(name) }
+	pub fn execute(&self, flow: &str, vault: &Vault, file: Option<File> ) -> Result<()> { 
+		self.0.get(flow).ok_or(anyhow!("Flow not found: {flow}"))?.execute(vault, file)
+	}
 
 	pub fn register_many(mut self, flows: Vec<Flow>) -> Result<Self> {
 		for flow in flows { self = self.register(flow)?; }
@@ -40,31 +42,17 @@ impl FlowController {
 	}
 }
 
-impl FlowFn {
-	pub fn execute(&self, vault: &Vault, file_path: Option<PathBuf>) -> Result<()> {
-		let file_path = file_path.map(|file_path| { 
-			if file_path.is_absolute() { file_path }
-			else { vault.root_path().join(file_path) }
-		});
+impl Flow {
+	pub fn execute(&self, vault: &Vault, file: Option<File>) -> Result<()> {
+		use FlowFn::*;
+		match (&self.func, file) {
+			(FreeFn(flow), None) 				=> flow(vault),
+			(NoteFn(flow), Some(file)) 			=> flow(vault, &file),
+			(MutatingFn(flow), Some(mut file)) 	=> flow(vault, &mut file),
 
-		match (self, file_path) {
-
-			(Self::NoteFn(_) | Self::MutatingFn(_), Some(file_path)) => {
-				let mut note = File::get(file_path).map_err(|_| anyhow!("Failed to get origin note file"))?;
-				note.to_note().map_err(|e| anyhow!("Origin note is not a valid note: {}", e))?;
-
-				match self {
-					Self::NoteFn(flow) 		=> flow(vault, &note),
-					Self::MutatingFn(flow) 	=> flow(vault, &mut note),
-					_ 						=> unreachable!(),
-				}
-			} 
-
-			(Self::FreeFn(flow), None) 					=> flow(vault),
-
-			(Self::NoteFn(_), None) 	=> Err(anyhow!("Note flows require an origin note")),
-			(Self::MutatingFn(_), None) => Err(anyhow!("Mutating note flows require an origin note")),
-			(Self::FreeFn(_), Some(_)) 	=> Err(anyhow!("FreeFlows do not accept an origin note")),
+			(NoteFn(_), None) 		=> Err(anyhow!("Note flows require an origin note")),
+			(MutatingFn(_), None) 	=> Err(anyhow!("Mutating note flows require an origin note")),
+			(FreeFn(_), Some(_)) 	=> Err(anyhow!("FreeFlows do not accept an origin note")),
 
 		}
 	}
