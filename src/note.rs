@@ -32,7 +32,7 @@ impl<'n> Note<'n> {
 	pub fn get_content(&self) -> &str { self.split().content }
 
 	pub fn get_props<'de, T>(&'de self) -> Result<T> 
-		where T: Deserialize<'de>
+		where T: DeserializeOwned
 	{ 
 		let props = self.split().props.ok_or(anyhow!("No properties found"))?;
 		serde_yaml::from_str::<T>(props).map_err(|e| anyhow!("Could not parse properties:\n{}", e))
@@ -45,16 +45,13 @@ impl<'n> Note<'n> {
 		Ok(())
 	}
 
-	pub fn change_props<'de, T, U>(&'de mut self, func: fn(&mut Result<T>) -> Result<U>) -> Result<()> 
-		where T: Deserialize<'de>, U: Serialize
+	pub fn change_props<T>(mut self, func: fn(&mut T) -> Result<()>) -> Result<()> 
+		where T: DeserializeOwned + Serialize
 	{
-		let mut props = self.get_props();
+		let mut props = self.get_props::<T>()?;
 		func(&mut props)?;
-		// todo: fix
-		// if let Ok(props) = props {
-		// 	let props = serde_yaml::to_string(&props)?;
-		// 	self.content = NoteSections { props: Some(&props), ..self.split() }.merge();
-		// }
+		let props_str = serde_yaml::to_string(&props)?;
+		self.content = NoteSections { props: Some(&props_str), ..self.split() }.merge();
 		Ok(())
 	}
 
