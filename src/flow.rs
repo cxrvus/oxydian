@@ -1,5 +1,7 @@
-use crate::{controller::ControllerItem, file::File, util::*, vault::Vault};
+use crate::{file::File, util::*, vault::Vault};
 
+
+pub struct FlowController (HashMap<String, Flow>);
 
 pub struct Flow {
 	pub name: &'static str,
@@ -10,6 +12,32 @@ pub enum FlowFn {
 	FreeFn (fn(&Vault) -> Result<()>),
 	NoteFn (fn(&Vault, &File) -> Result<()>),
 	MutatingFn (fn(&Vault, &mut File) -> Result<()>),
+}
+
+impl Default for FlowController {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl FlowController {
+	#[inline]
+	pub fn new() -> Self { Self(Default::default()) }
+
+	#[inline]
+	pub fn get(&self, name: &str) -> Option<&Flow> { self.0.get(name) }
+
+	pub fn register_many(mut self, flows: Vec<Flow>) -> Result<Self> {
+		for flow in flows { self = self.register(flow)?; }
+		Ok(self)
+	}
+
+	pub fn register(mut self, flow: Flow) -> Result<Self> {
+		let name = flow.name;
+		if self.0.contains_key(name) { return Err(anyhow!("Flow with name '{name}' already exists")); }
+		else { self.0.insert(name.to_string(), flow); }
+		Ok(self)
+	}
 }
 
 impl FlowFn {
@@ -40,9 +68,4 @@ impl FlowFn {
 
 		}
 	}
-}
-
-impl ControllerItem for Flow {
-	#[inline]
-	fn name(&self) -> String { self.name.to_string() }
 }

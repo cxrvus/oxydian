@@ -1,4 +1,4 @@
-use oxydian::{controller::Controller, prelude::*};
+use oxydian::prelude::*;
 
 
 fn main() {
@@ -11,7 +11,7 @@ fn execute() -> Result<()> {
 			sub_paths: SubPaths {
 				notes: Some("Notes".into()),
 			},
-			flows: Controller::<Flow>::new()
+			flows: FlowController::new()
 				.register_many(vec![
 					Flow {
 						name: "test_flow",
