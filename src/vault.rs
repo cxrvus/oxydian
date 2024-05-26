@@ -35,4 +35,16 @@ impl Vault {
 
 		Ok(files)
 	}
+
+	pub fn validate(&self) -> Result<()> {
+		if !self.root_path.exists() { return Err(anyhow!("Vault root path does not exist")); }
+		if !self.root_path.is_dir() { return Err(anyhow!("Vault root path is not a directory")); }
+		if let Some(notes_path) = &self.sub_paths.notes {
+			let notes_path = self.path(notes_path.to_str().unwrap());
+			if !notes_path.exists() { return Err(anyhow!("Notes sub path does not exist")); }
+			if !notes_path.is_dir() { return Err(anyhow!("Notes sub path is not a directory")); }
+		}
+
+		Ok(())
+	}
 }

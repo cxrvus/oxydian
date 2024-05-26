@@ -35,6 +35,7 @@ pub struct App {
 
 impl App {
 	pub fn execute (&self) -> Result<()> {
+		self.vault.validate()?;
 		let command = parse_args()?.command;
 		match command {
 			Command::ExecuteFlow(FlowArgs { flow, file_path }) => { 
