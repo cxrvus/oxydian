@@ -10,7 +10,7 @@ pub struct Flow {
 
 pub enum FlowFn {
 	FreeFn (fn(&Vault) -> Result<()>),
-	NoteFn (fn(&Vault, &File) -> Result<()>),
+	NoteFn (fn(&Vault, &mut File) -> Result<()>),
 }
 
 impl Default for FlowController {
