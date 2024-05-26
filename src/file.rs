@@ -23,17 +23,17 @@ impl File {
 	pub fn get_note(&self) -> Result<Note> {
 		if self.ext() != "md" { return Err(anyhow!("File '{:?}' is not a markdown file", self.path())); }
 		let content = fs::read_to_string(self.path())?;
-		Ok(Note(content))
+		Ok(Note::new(content))
 	}
 
 	pub fn change_note(&self, func: fn(&mut Note) -> Result<()>) -> Result<()> {
 		let mut note = self.get_note()?;
 		func(&mut note)?;
-		self.write(note.0)
+		self.write(note.get_full_content())
 	}
 
 	#[inline]
-	fn write(&self, content: String) -> Result<()> {
+	fn write(&self, content: &str) -> Result<()> {
 		fs::write(self.path(), content).map_err(|e| anyhow!("Could not write to file:\n{}\n{:?}", e, self.path()))
 	}
 

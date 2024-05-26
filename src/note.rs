@@ -1,7 +1,7 @@
 use crate::util::*;
 
 
-pub struct Note(pub String);
+pub struct Note(String);
 
 pub struct NoteSections<'s> {
 	pub props: Option<&'s str>,
@@ -16,8 +16,14 @@ impl<'s> NoteSections<'s> {
 }
 
 impl Note {
+	pub fn new(content: String) -> Self { Self(content) }
+
 	pub fn empty() -> Self { Self("".into()) }
 
+	#[inline]
+	pub fn get_full_content(&self) -> &str { &self.0 }
+
+	#[inline]
 	pub fn get_content(&self) -> &str { self.split().content }
 
 	pub fn get_props<T>(&self) -> Result<T> 
