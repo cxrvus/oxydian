@@ -1,4 +1,4 @@
-use crate::{file::File, util::*};
+use crate::{file::File, note::Note, util::*};
 use std::fs;
 
 
@@ -12,21 +12,15 @@ pub struct SubPaths {
 }
 
 impl Vault {
-	pub fn root_path(&self) -> &PathBuf {
-		&self.root_path
-	}
+	pub fn root_path(&self) -> &PathBuf { &self.root_path }
 
-	pub fn path(&self, sub_path: &str) -> PathBuf {
-		self.root_path.clone().join(sub_path)
-	}
+	pub fn path(&self, sub_path: &str) -> PathBuf { self.root_path.clone().join(sub_path) }
 
-	pub fn get(&self, sub_path: &str) -> Result<File> {
-		File::get(self.path(sub_path))
-	}
+	pub fn get(&self, sub_path: &str) -> Result<File> { File::get(self.path(sub_path)) }
 
-	pub fn ls(&self, sub_dir: &str) -> Result<Vec<File>> {
-		self.ls_absolute(self.path(sub_dir))
-	}
+	pub fn note(&self, sub_path: &str) -> Result<Note> { self.get(sub_path)?.get_note() }
+
+	pub fn ls(&self, sub_dir: &str) -> Result<Vec<File>> { self.ls_absolute(self.path(sub_dir)) }
 
 	pub fn ls_absolute(&self, folder: PathBuf) -> Result<Vec<File>> {
 		let dir = fs::read_dir(folder)?;
