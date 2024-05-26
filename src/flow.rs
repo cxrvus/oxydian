@@ -11,7 +11,6 @@ pub struct Flow {
 pub enum FlowFn {
 	FreeFn (fn(&Vault) -> Result<()>),
 	NoteFn (fn(&Vault, &File) -> Result<()>),
-	MutatingFn (fn(&Vault, &mut File) -> Result<()>),
 }
 
 impl Default for FlowController {
@@ -46,14 +45,10 @@ impl Flow {
 	pub fn execute(&self, vault: &Vault, file: Option<File>) -> Result<()> {
 		use FlowFn::*;
 		match (&self.func, file) {
-			(FreeFn(flow), None) 				=> flow(vault),
-			(NoteFn(flow), Some(file)) 			=> flow(vault, &file),
-			(MutatingFn(flow), Some(mut file)) 	=> flow(vault, &mut file),
-
-			(NoteFn(_), None) 		=> Err(anyhow!("Note flows require an origin note")),
-			(MutatingFn(_), None) 	=> Err(anyhow!("Mutating note flows require an origin note")),
-			(FreeFn(_), Some(_)) 	=> Err(anyhow!("FreeFlows do not accept an origin note")),
-
+			(FreeFn(flow), None) 			=> flow(vault),
+			(NoteFn(flow), Some(mut file)) 	=> flow(vault, &mut file),
+			(NoteFn(_), None) 				=> Err(anyhow!("Note flows require an origin note")),
+			(FreeFn(_), Some(_)) 			=> Err(anyhow!("FreeFlows do not accept an origin note")),
 		}
 	}
 }
