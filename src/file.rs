@@ -8,14 +8,9 @@ pub struct File {
 }
 
 impl File {
-	fn validate_get(path: &PathBuf) -> Result<()> {
+	pub fn get(path: PathBuf) -> Result<Self> {
 		if !path.exists() { return Err(anyhow!("File {} does not exist", path.to_str().unwrap())); }
 		if !path.is_file() { return Err(anyhow!("Path {} is not a file", path.to_str().unwrap())); }
-		Ok(())
-	}
-
-	pub fn get(path: PathBuf) -> Result<Self> {
-		Self::validate_get(&path)?;
 		Ok(Self { path })
 	}
 
@@ -25,16 +20,24 @@ impl File {
 	pub fn stem(&self) -> &str { self.path.file_stem().unwrap_or_default().to_str().unwrap() }
 	pub fn ext(&self)  -> &str { self.path.extension().unwrap_or_default().to_str().unwrap() }
 
-	pub fn to_note(&self) -> Result<Note> {
-		if self.ext() != "md" { return Err(anyhow!("File {} is not a markdown file", self.path().to_str().unwrap())); }
+	pub fn get_note(&self) -> Result<Note> {
+		if self.ext() != "md" { return Err(anyhow!("File '{:?}' is not a markdown file", self.path())); }
 		let content = fs::read_to_string(self.path())?;
-		Ok(Note::new(content))
+		Ok(Note(content))
 	}
 
-	pub fn write(&self, content: String) -> Result<()> {
+	pub fn change_note(&self, func: fn(&mut Note) -> Result<()>) -> Result<()> {
+		let mut note = self.get_note()?;
+		func(&mut note)?;
+		self.write(note.0)
+	}
+
+	#[inline]
+	fn write(&self, content: String) -> Result<()> {
 		fs::write(self.path(), content).map_err(|e| anyhow!("Could not write to file:\n{}\n{:?}", e, self.path()))
 	}
 
+	#[inline]
 	pub fn rm(self) -> Result<()> {
 		fs::remove_file(self.path())?;
 		Ok(())

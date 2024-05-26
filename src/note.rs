@@ -1,7 +1,7 @@
 use crate::util::*;
 
 
-pub struct Note { content: String, }
+pub struct Note(pub String);
 
 pub struct NoteSections<'s> {
 	pub props: Option<&'s str>,
@@ -16,9 +16,7 @@ impl<'s> NoteSections<'s> {
 }
 
 impl Note {
-	pub fn new(content: String) -> Self { Self { content } }
-
-	pub fn get_full_content(&self) -> &str { &self.content }
+	pub fn empty() -> Self { Self("".into()) }
 
 	pub fn get_content(&self) -> &str { self.split().content }
 
@@ -32,7 +30,7 @@ impl Note {
 	pub fn change_content(&mut self, func: fn(&mut String) -> Result<()>) -> Result<()> {
 		let mut content = self.get_content().to_string();
 		func(&mut content)?;
-		self.content = NoteSections { content: &content, ..self.split() }.merge();
+		self.0 = NoteSections { content: &content, ..self.split() }.merge();
 		Ok(())
 	}
 
@@ -42,13 +40,13 @@ impl Note {
 		let mut props = self.get_props::<T>()?;
 		func(&mut props)?;
 		let props_str = serde_yaml::to_string(&props)?;
-		self.content = NoteSections { props: Some(&props_str), ..self.split() }.merge();
+		self.0 = NoteSections { props: Some(&props_str), ..self.split() }.merge();
 		Ok(())
 	}
 
 	fn split(&self) -> NoteSections {
 		let re = regex::Regex::new(r"^\s*---\r?\n((?s).*?(?-s))---\r?\n((?s).*(?-s))$").unwrap();
-		let caps = re.captures(&self.content);
+		let caps = re.captures(&self.0);
 		match caps {
 			Some(caps) => NoteSections {
 				props: Some(caps.get(1).unwrap().as_str()),
@@ -56,7 +54,7 @@ impl Note {
 			},
 			None => NoteSections {
 				props: None,
-				content: &self.content,
+				content: &self.0,
 			},
 		}
 	}
