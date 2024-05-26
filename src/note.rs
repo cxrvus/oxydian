@@ -1,12 +1,7 @@
-use std::fs;
-use crate::{file::File, util::*};
+use crate::util::*;
 
 
-pub struct Note<'n>
-{
-	content: String,
-	file: &'n File,
-}
+pub struct Note { content: String, }
 
 pub struct NoteSections<'s> {
 	pub props: Option<&'s str>,
@@ -20,12 +15,8 @@ impl<'s> NoteSections<'s> {
 	}
 }
 
-impl<'n> Note<'n> {
-	pub fn new(file: &'n File) -> Result<Self> {
-		if file.ext() != "md" { return Err(anyhow!("File {} is not a markdown file", file.path().to_str().unwrap())); }
-		let content = fs::read_to_string(file.path())?;
-		Ok(Self { file, content })
-	}
+impl Note {
+	pub fn new(content: String) -> Self { Self { content } }
 
 	pub fn get_full_content(&self) -> &str { &self.content }
 
@@ -53,10 +44,6 @@ impl<'n> Note<'n> {
 		let props_str = serde_yaml::to_string(&props)?;
 		self.content = NoteSections { props: Some(&props_str), ..self.split() }.merge();
 		Ok(())
-	}
-
-	pub fn write(self) -> Result<()> {
-		fs::write(self.file.path(), self.content).map_err(|e| anyhow!("Could not write to note:\n{}\n{:?}", e, self.file.path()))
 	}
 
 	fn split(&self) -> NoteSections {
