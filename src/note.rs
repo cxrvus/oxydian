@@ -45,7 +45,7 @@ impl<'n> Note<'n> {
 		Ok(())
 	}
 
-	pub fn change_props<T>(mut self, func: fn(&mut T) -> Result<()>) -> Result<()> 
+	pub fn change_props<T>(&mut self, func: fn(&mut T) -> Result<()>) -> Result<()> 
 		where T: DeserializeOwned + Serialize
 	{
 		let mut props = self.get_props::<T>()?;
