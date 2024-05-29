@@ -4,9 +4,6 @@ pub use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 #[inline]
 pub fn to_bool(bool_option: Option<bool>) -> bool {
-	match bool_option {
-		Some(bool) => bool,
-		None => false,
-	}
+	bool_option.unwrap_or(false)
 }
 
