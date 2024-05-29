@@ -4,6 +4,7 @@ pub mod flow;
 pub mod flows;
 pub mod file;
 pub mod link;
+pub mod macros;
 pub mod note;
 pub mod time;
 pub mod util;
@@ -12,6 +13,7 @@ pub mod view;
 
 pub mod prelude {
 	pub use super::util::*;
+	pub use super::register_flows;
 	pub use super::app::App;
 	pub use super::context::Context;
 	pub use super::flow::{*, FlowFn::*};
