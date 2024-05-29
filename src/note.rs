@@ -33,21 +33,21 @@ impl Note {
 		serde_yaml::from_str::<T>(props).map_err(|e| anyhow!("Could not parse properties:\n{}", e))
 	}
 
-	pub fn change_content(&mut self, func: fn(&mut String) -> Result<()>) -> Result<()> {
+	pub fn change_content(&mut self, func: fn(&mut String) -> Result<()>) -> Result<&mut Self> {
 		let mut content = self.get_content().to_string();
 		func(&mut content)?;
 		self.0 = NoteSections { content: &content, ..self.split() }.merge();
-		Ok(())
+		Ok(self)
 	}
 
-	pub fn change_props<T>(&mut self, func: fn(&mut T) -> Result<()>) -> Result<()> 
+	pub fn change_props<T>(&mut self, func: fn(&mut T) -> Result<()>) -> Result<&mut Self> 
 		where T: DeserializeOwned + Serialize
 	{
 		let mut props = self.get_props::<T>()?;
 		func(&mut props)?;
 		let props_str = serde_yaml::to_string(&props)?;
 		self.0 = NoteSections { props: Some(&props_str), ..self.split() }.merge();
-		Ok(())
+		Ok(self)
 	}
 
 	fn split(&self) -> NoteSections {

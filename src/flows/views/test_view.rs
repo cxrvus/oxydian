@@ -7,7 +7,8 @@ pub const TEST_VIEW: Flow = Flow {
 			note.change_content(|content| {
 				content.push_str("\n\n*this note has been refreshed*\n");
 				Ok(())
-			})
+			})?;
+			Ok(())
 		})
 	})
 };

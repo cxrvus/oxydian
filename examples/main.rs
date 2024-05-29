@@ -21,8 +21,17 @@ fn execute() -> Result<()> {
 			Flow {
 				name: "test_flow",
 				func: NoteFn(|_, file| {
-					println!("content:\n{}\n", file.get_note()?.get_content());
-					println!("props:\n{:?}", file.get_note()?.get_props::<NoteBase>());
+					file.change_note(|note| {
+						note.change_content(|content| {
+							content.push_str("\n\n*this note has been refreshed*\n");
+							Ok(())
+						})?
+						.change_props::<NoteBase>(|props| {
+							props.of.push("test_flow".into());
+							Ok(())
+						})?;
+						Ok(())
+					})?;
 					Ok(())
 				}),
 			},
