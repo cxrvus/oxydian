@@ -1,4 +1,5 @@
 pub mod app;
+pub mod context;
 pub mod flow;
 pub mod flows;
 pub mod file;
@@ -12,6 +13,7 @@ pub mod view;
 pub mod prelude {
 	pub use super::util::*;
 	pub use super::app::App;
+	pub use super::context::Context;
 	pub use super::flow::{*, FlowFn::*};
 	pub use super::flows;
 	pub use super::file::File;
