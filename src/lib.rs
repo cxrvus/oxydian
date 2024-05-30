@@ -16,7 +16,7 @@ pub mod prelude {
 	pub use super::register_flows;
 	pub use super::app::App;
 	pub use super::context::Context;
-	pub use super::flow::{*, FlowFn::*};
+	pub use super::flow::*;
 	pub use super::flows;
 	pub use super::file::File;
 	pub use super::vault::*;

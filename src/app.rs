@@ -1,4 +1,4 @@
-use crate::{file::File, flow::*, util::*, vault::*};
+use crate::{context::Context, file::File, flow::*, util::*, vault::*};
 use clap::{Parser, Subcommand};
 
 
@@ -39,15 +39,20 @@ impl App {
 		match command {
 			Command::ExecuteFlow(FlowArgs { flow, file_path }) => { 
 				let file = file_path
+					.ok_or(anyhow!("No origin file provided"))
 					.map(|file_path| { 
 						if file_path.is_absolute() { file_path }
 						else { self.vault.root_path().join(file_path) }
 					})
 					.map(|file_path| File::get(file_path).map_err(|_| anyhow!("Failed to get origin note file")))
-					.transpose()?
-				;
+					// .map(|file| &mut file)
+				?;
 
-				self.flows.execute(&flow, &self.vault, file)
+
+				let vault = self.vault;
+				// todo: turn file into a normal owned field & try passing ctx as mutable
+				let ctx = Context { vault, file };
+				self.flows.execute(&flow, &ctx)
 			}
 		}
 	}

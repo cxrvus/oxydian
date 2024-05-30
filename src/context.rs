@@ -1,6 +1,6 @@
 use crate::{file::File, util::*, vault::Vault};
 
-pub struct Context{
+pub struct Context<'c> {
 	pub vault: Vault,
-	pub origin: Result<File>,
+	pub file: Result<&'c mut File>,
 }

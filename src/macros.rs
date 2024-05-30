@@ -1,10 +1,10 @@
 #[macro_export]
 macro_rules! register_flows {
 	( $( $name:ident ),* ) => {{
-		let mut map: HashMap<&'static str, Box<dyn Fn(&Context) -> Result<()>>> = HashMap::new();
+		let mut hash_map: HashMap<&'static str, Flow> = HashMap::new();
 		$(
-			map.insert(stringify!($name), Box::new($name));
+			hash_map.insert(stringify!($name), Flow(Box::new($name)));
 		)*
-		map
+		FlowController::new(hash_map)
 	}};
 }
