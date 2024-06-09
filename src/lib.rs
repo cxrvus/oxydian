@@ -14,7 +14,6 @@ pub mod view;
 pub mod prelude {
 	pub use super::util::*;
 	pub use super::register_flows;
-	pub use super::app::App;
 	pub use super::context::Context;
 	pub use super::flow::*;
 	pub use super::flows;
